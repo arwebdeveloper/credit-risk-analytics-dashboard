@@ -1,0 +1,93 @@
+.app-container {
+  min-height: 100vh;
+}
+
+.app-container.dark {
+  background-color: #141414;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.app-container.light {
+  background-color: #f0f2f5;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.main-content {
+  padding: 24px;
+  margin: 0;
+  min-height: 280px;
+}
+
+.site-layout-background {
+  background: #fff;
+}
+
+.dark .site-layout-background {
+  background: #1f1f1f;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+}
+
+.logo {
+  height: 32px;
+  margin: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.dashboard-card {
+  margin-bottom: 24px;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.dark .dashboard-card {
+  background-color: #1f1f1f;
+  border: 1px solid #303030;
+}
+
+.stats-card {
+  height: 100%;
+}
+
+.risk-score-high {
+  color: #ff4d4f;
+}
+
+.risk-score-medium {
+  color: #faad14;
+}
+
+.risk-score-low {
+  color: #52c41a;
+}
+
+.status-tag-review {
+  background-color: #1677ff;
+}
+
+.status-tag-approved {
+  background-color: #52c41a;
+}
+
+.status-tag-rejected {
+  background-color: #ff4d4f;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 12px;
+  }
+
+  .dashboard-card {
+    margin-bottom: 12px;
+  }
+}

@@ -1,0 +1,9 @@
+.theme-icon {
+    display: inline-flex;
+    transition: transform 0.4s ease, opacity 0.3s ease;
+  }
+  
+  .animate-icon {
+    transform: rotate(360deg) scale(1.2);
+  }
+  
