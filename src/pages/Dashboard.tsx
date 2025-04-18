@@ -20,7 +20,8 @@ import {
 import type { Customer } from "../types"
 import { useCustomers } from "../hooks/useCustomers"
 import { getRiskLevel, getRiskColor } from "../utils/riskCalculator"
-import { useTheme } from "../context/ThemeContext"
+import type { ColumnsType } from "antd/es/table"
+
 
 const { Title } = Typography
 const { Search } = Input
@@ -28,7 +29,6 @@ const { Search } = Input
 const Dashboard: React.FC = () => {
   const { customers, loading, error, getRiskScoreDistribution, getIncomeExpensesData } = useCustomers()
   const [searchText, setSearchText] = useState("")
-  const { isDarkMode } = useTheme()
 
   // Filter customers based on search text
   const filteredCustomers = customers.filter(
@@ -50,32 +50,32 @@ const Dashboard: React.FC = () => {
   const incomeExpensesData = getIncomeExpensesData()
 
   // Table columns
-  const columns = [
+  const columns: ColumnsType<Customer> = [
     {
       title: "Customer ID",
       dataIndex: "customerId",
       key: "customerId",
-      sorter: (a: Customer, b: Customer) => a.customerId.localeCompare(b.customerId),
+      sorter: (a, b) => a.customerId.localeCompare(b.customerId),
     },
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      sorter: (a: Customer, b: Customer) => a.name.localeCompare(b.name),
+      sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
       title: "Monthly Income",
       dataIndex: "monthlyIncome",
       key: "monthlyIncome",
       render: (value: number) => `$${value.toLocaleString()}`,
-      sorter: (a: Customer, b: Customer) => a.monthlyIncome - b.monthlyIncome,
+      sorter: (a, b) => a.monthlyIncome - b.monthlyIncome,
     },
     {
       title: "Monthly Expenses",
       dataIndex: "monthlyExpenses",
       key: "monthlyExpenses",
       render: (value: number) => `$${value.toLocaleString()}`,
-      sorter: (a: Customer, b: Customer) => a.monthlyExpenses - b.monthlyExpenses,
+      sorter: (a, b) => a.monthlyExpenses - b.monthlyExpenses,
     },
     {
       title: "Risk Score",
@@ -89,7 +89,7 @@ const Dashboard: React.FC = () => {
           </span>
         )
       },
-      sorter: (a: Customer, b: Customer) => (a.riskScore || 0) - (b.riskScore || 0),
+      sorter: (a, b) => (a.riskScore || 0) - (b.riskScore || 0),
     },
     {
       title: "Status",
@@ -115,10 +115,9 @@ const Dashboard: React.FC = () => {
         { text: "Approved", value: "Approved" },
         { text: "Rejected", value: "Rejected" },
       ],
-      onFilter: (value: string | number | boolean, record: Customer) => record.status === value,
+      onFilter: (value, record) => record.status === value,
     },
   ]
-
   if (loading) {
     return <Spin size="large" />
   }

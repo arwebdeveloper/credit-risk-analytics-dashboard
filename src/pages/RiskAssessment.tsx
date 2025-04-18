@@ -8,7 +8,7 @@ import { SearchOutlined } from "@ant-design/icons"
 import type { Customer } from "../types"
 import { useCustomers } from "../hooks/useCustomers"
 import { getRiskLevel, getRiskColor } from "../utils/riskCalculator"
-import { useTheme } from "../context/ThemeContext"
+import { ColumnsType } from "antd/es/table"
 
 const { Title, Paragraph } = Typography
 const { Search } = Input
@@ -18,7 +18,6 @@ const RiskAssessment: React.FC = () => {
   const { customers, loading, error } = useCustomers()
   const [searchText, setSearchText] = useState("")
   const [riskFilter, setRiskFilter] = useState<string | null>(null)
-  const { isDarkMode } = useTheme()
 
   // Filter customers based on search text and risk level
   const filteredCustomers = customers.filter((customer) => {
@@ -33,24 +32,24 @@ const RiskAssessment: React.FC = () => {
   })
 
   // Table columns
-  const columns = [
+  const columns: ColumnsType<Customer> = [
     {
       title: "Customer ID",
       dataIndex: "customerId",
       key: "customerId",
-      sorter: (a: Customer, b: Customer) => a.customerId.localeCompare(b.customerId),
+      sorter: (a, b) => a.customerId.localeCompare(b.customerId),
     },
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      sorter: (a: Customer, b: Customer) => a.name.localeCompare(b.name),
+      sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
       title: "Credit Score",
       dataIndex: "creditScore",
       key: "creditScore",
-      sorter: (a: Customer, b: Customer) => a.creditScore - b.creditScore,
+      sorter: (a, b) => a.creditScore - b.creditScore,
     },
     {
       title: "Loan Repayment History",
@@ -69,11 +68,11 @@ const RiskAssessment: React.FC = () => {
     {
       title: "Loans/Income Ratio",
       key: "loansIncomeRatio",
-      render: (_, record: Customer) => {
+      render: (_, record) => {
         const ratio = record.outstandingLoans / (record.monthlyIncome * 12)
         return (ratio * 100).toFixed(2) + "%"
       },
-      sorter: (a: Customer, b: Customer) =>
+      sorter: (a, b) =>
         a.outstandingLoans / (a.monthlyIncome * 12) - b.outstandingLoans / (b.monthlyIncome * 12),
     },
     {
@@ -96,7 +95,7 @@ const RiskAssessment: React.FC = () => {
           </div>
         )
       },
-      sorter: (a: Customer, b: Customer) => (a.riskScore || 0) - (b.riskScore || 0),
+      sorter: (a, b) => (a.riskScore || 0) - (b.riskScore || 0),
     },
   ]
 

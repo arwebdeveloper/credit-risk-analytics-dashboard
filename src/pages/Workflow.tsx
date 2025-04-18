@@ -23,7 +23,7 @@ import type { Customer } from "../types"
 import { useCustomers } from "../hooks/useCustomers"
 import { getRiskLevel, getRiskColor } from "../utils/riskCalculator"
 import { updateCustomerStatus, createAlert } from "../services/api"
-import { useTheme } from "../context/ThemeContext"
+import { ColumnsType } from "antd/es/table"
 
 const { Title, Paragraph } = Typography
 const { Option } = Select
@@ -35,7 +35,6 @@ const Workflow: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
   const [form] = Form.useForm()
-  const { isDarkMode } = useTheme()
 
   // Handle status change
   const handleStatusChange = async (customerId: string, newStatus: "Review" | "Approved" | "Rejected") => {
@@ -78,7 +77,7 @@ const Workflow: React.FC = () => {
     }
   }
 
-  // Show confirmation modal for status change
+  // Confirmation modal for status change
   const showStatusConfirm = (customer: Customer, newStatus: "Review" | "Approved" | "Rejected") => {
     const riskLevel = getRiskLevel(customer.riskScore || 0)
     const isHighRisk = riskLevel === "High"
@@ -113,7 +112,7 @@ const Workflow: React.FC = () => {
   // Handle form submission
   const handleFormSubmit = () => {
     form.validateFields().then((values) => {
-      // In a real app, you would save the notes to the backend
+      console.log({values})
       notification.success({
         message: "Notes Saved",
         description: "Customer notes have been saved successfully.",
@@ -123,7 +122,7 @@ const Workflow: React.FC = () => {
   }
 
   // Table columns
-  const columns = [
+  const columns: ColumnsType<Customer> = [
     {
       title: "Customer ID",
       dataIndex: "customerId",
@@ -146,7 +145,7 @@ const Workflow: React.FC = () => {
           </Tag>
         )
       },
-      sorter: (a: Customer, b: Customer) => (a.riskScore || 0) - (b.riskScore || 0),
+      sorter: (a, b) => (a.riskScore || 0) - (b.riskScore || 0),
     },
     {
       title: "Current Status",
@@ -172,12 +171,12 @@ const Workflow: React.FC = () => {
         { text: "Approved", value: "Approved" },
         { text: "Rejected", value: "Rejected" },
       ],
-      onFilter: (value: string | number | boolean, record: Customer) => record.status === value,
+      onFilter: (value, record) => record.status === value,
     },
     {
       title: "Update Status",
       key: "action",
-      render: (_: any, record: Customer) => (
+      render: (_: any, record) => (
         <Space size="small">
           <Select
             defaultValue={record.status}

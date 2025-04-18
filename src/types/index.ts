@@ -9,6 +9,7 @@ export interface Customer {
   accountBalance: number
   status: "Review" | "Approved" | "Rejected"
   riskScore?: number
+  notes?: string
 }
 
 export interface RiskScoreDistribution {
