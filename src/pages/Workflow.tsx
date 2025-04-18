@@ -1,8 +1,5 @@
-"use client"
-
-import type React from "react"
-
-import { useState } from "react"
+import type React from "react";
+import { useState } from "react";
 import {
   Card,
   Table,
@@ -10,77 +7,94 @@ import {
   Select,
   Button,
   notification,
-  Spin,
   Alert,
   Typography,
   Space,
   Modal,
   Form,
   Input,
-} from "antd"
-import { ReloadOutlined, ExclamationCircleOutlined } from "@ant-design/icons"
-import type { Customer } from "../types"
-import { useCustomers } from "../hooks/useCustomers"
-import { getRiskLevel, getRiskColor } from "../utils/riskCalculator"
-import { updateCustomerStatus, createAlert } from "../services/api"
-import { ColumnsType } from "antd/es/table"
+} from "antd";
+import { ReloadOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import type { Customer } from "../types";
+import { useCustomers } from "../hooks/useCustomers";
+import { getRiskLevel, getRiskColor } from "../utils/riskCalculator";
+import { updateCustomerStatus, createAlert } from "../services/api";
+import { ColumnsType } from "antd/es/table";
+import Loader from "@/components/Loader";
 
-const { Title, Paragraph } = Typography
-const { Option } = Select
-const { confirm } = Modal
+const { Title, Paragraph } = Typography;
+const { Option } = Select;
+const { confirm } = Modal;
 
 const Workflow: React.FC = () => {
-  const { customers, setCustomers, loading, error } = useCustomers()
-  const [updatingCustomerId, setUpdatingCustomerId] = useState<string | null>(null)
-  const [isModalVisible, setIsModalVisible] = useState(false)
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
-  const [form] = Form.useForm()
+  const { customers, setCustomers, loading, error } = useCustomers();
+  const [updatingCustomerId, setUpdatingCustomerId] = useState<string | null>(
+    null
+  );
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null
+  );
+  const [form] = Form.useForm();
 
   // Handle status change
-  const handleStatusChange = async (customerId: string, newStatus: "Review" | "Approved" | "Rejected") => {
+  const handleStatusChange = async (
+    customerId: string,
+    newStatus: "Review" | "Approved" | "Rejected"
+  ) => {
     try {
-      setUpdatingCustomerId(customerId)
+      setUpdatingCustomerId(customerId);
 
       // Update status via API
-      await updateCustomerStatus(customerId, newStatus)
+      await updateCustomerStatus(customerId, newStatus);
 
       // Update local state
       setCustomers((prevCustomers) =>
         prevCustomers.map((customer) =>
-          customer.customerId === customerId ? { ...customer, status: newStatus } : customer,
-        ),
-      )
+          customer.customerId === customerId
+            ? { ...customer, status: newStatus }
+            : customer
+        )
+      );
 
       notification.success({
         message: "Status Updated",
         description: `Customer ${customerId} status changed to ${newStatus}`,
-      })
+      });
 
       // Create alert for high-risk customers that are approved
-      const customer = customers.find((c) => c.customerId === customerId)
-      if (customer && customer.riskScore && customer.riskScore > 70 && newStatus === "Approved") {
-        await createAlert(customerId, customer.riskScore)
+      const customer = customers.find((c) => c.customerId === customerId);
+      if (
+        customer &&
+        customer.riskScore &&
+        customer.riskScore > 70 &&
+        newStatus === "Approved"
+      ) {
+        await createAlert(customerId, customer.riskScore);
 
         notification.warning({
           message: "High Risk Alert Created",
           description: `Alert created for high-risk customer ${customerId}`,
-        })
+        });
       }
     } catch (err) {
-      console.error("Error updating status:", err)
+      console.error("Error updating status:", err);
       notification.error({
         message: "Update Failed",
         description: "Failed to update customer status. Please try again.",
-      })
+      });
     } finally {
-      setUpdatingCustomerId(null)
+      setUpdatingCustomerId(null);
     }
-  }
+  };
 
   // Confirmation modal for status change
-  const showStatusConfirm = (customer: Customer, newStatus: "Review" | "Approved" | "Rejected") => {
-    const riskLevel = getRiskLevel(customer.riskScore || 0)
-    const isHighRisk = riskLevel === "High"
+  const showStatusConfirm = (
+    customer: Customer,
+    newStatus: "Review" | "Approved" | "Rejected"
+  ) => {
+    const riskLevel = getRiskLevel(customer.riskScore || 0);
+    const isHighRisk = riskLevel === "High";
 
     // Show warning for high-risk customers being approved
     if (isHighRisk && newStatus === "Approved") {
@@ -92,34 +106,34 @@ const Workflow: React.FC = () => {
         okType: "danger",
         cancelText: "Cancel",
         onOk() {
-          handleStatusChange(customer.customerId, newStatus)
+          handleStatusChange(customer.customerId, newStatus);
         },
-      })
+      });
     } else {
-      handleStatusChange(customer.customerId, newStatus)
+      handleStatusChange(customer.customerId, newStatus);
     }
-  }
+  };
 
   // Show customer details modal
   const showCustomerDetails = (customer: Customer) => {
-    setSelectedCustomer(customer)
-    setIsModalVisible(true)
+    setSelectedCustomer(customer);
+    setIsModalVisible(true);
     form.setFieldsValue({
       notes: customer.notes || "",
-    })
-  }
+    });
+  };
 
   // Handle form submission
   const handleFormSubmit = () => {
     form.validateFields().then((values) => {
-      console.log({values})
+      console.log({ values });
       notification.success({
         message: "Notes Saved",
         description: "Customer notes have been saved successfully.",
-      })
-      setIsModalVisible(false)
-    })
-  }
+      });
+      setIsModalVisible(false);
+    });
+  };
 
   // Table columns
   const columns: ColumnsType<Customer> = [
@@ -138,12 +152,12 @@ const Workflow: React.FC = () => {
       dataIndex: "riskScore",
       key: "riskScore",
       render: (value: number) => {
-        const riskLevel = getRiskLevel(value)
+        const riskLevel = getRiskLevel(value);
         return (
           <Tag color={getRiskColor(riskLevel)}>
             {value} ({riskLevel})
           </Tag>
-        )
+        );
       },
       sorter: (a, b) => (a.riskScore || 0) - (b.riskScore || 0),
     },
@@ -152,19 +166,19 @@ const Workflow: React.FC = () => {
       dataIndex: "status",
       key: "status",
       render: (status: string) => {
-        let color = ""
+        let color = "";
         switch (status) {
           case "Review":
-            color = "#1677ff"
-            break
+            color = "#1677ff";
+            break;
           case "Approved":
-            color = "#52c41a"
-            break
+            color = "#52c41a";
+            break;
           case "Rejected":
-            color = "#ff4d4f"
-            break
+            color = "#ff4d4f";
+            break;
         }
-        return <Tag color={color}>{status}</Tag>
+        return <Tag color={color}>{status}</Tag>;
       },
       filters: [
         { text: "Review", value: "Review" },
@@ -182,7 +196,12 @@ const Workflow: React.FC = () => {
             defaultValue={record.status}
             style={{ width: 120 }}
             loading={updatingCustomerId === record.customerId}
-            onChange={(value) => showStatusConfirm(record, value as "Review" | "Approved" | "Rejected")}
+            onChange={(value) =>
+              showStatusConfirm(
+                record,
+                value as "Review" | "Approved" | "Rejected"
+              )
+            }
           >
             <Option value="Review">Review</Option>
             <Option value="Approved">Approve</Option>
@@ -194,14 +213,14 @@ const Workflow: React.FC = () => {
         </Space>
       ),
     },
-  ]
+  ];
 
   if (loading) {
-    return <Spin size="large" />
+    return <Loader />;
   }
 
   if (error) {
-    return <Alert message="Error" description={error} type="error" showIcon />
+    return <Alert message="Error" description={error} type="error" showIcon />;
   }
 
   return (
@@ -210,8 +229,9 @@ const Workflow: React.FC = () => {
 
       <Card className="dashboard-card">
         <Paragraph>
-          This module allows risk officers to review customer applications and update their status. High-risk customers
-          that are approved will automatically generate alerts for additional review.
+          This module allows risk officers to review customer applications and
+          update their status. High-risk customers that are approved will
+          automatically generate alerts for additional review.
         </Paragraph>
       </Card>
 
@@ -220,7 +240,10 @@ const Workflow: React.FC = () => {
         className="dashboard-card"
         style={{ marginTop: "24px" }}
         extra={
-          <Button icon={<ReloadOutlined />} onClick={() => window.location.reload()}>
+          <Button
+            icon={<ReloadOutlined />}
+            onClick={() => window.location.reload()}
+          >
             Refresh
           </Button>
         }
@@ -256,19 +279,23 @@ const Workflow: React.FC = () => {
               <strong>Name:</strong> {selectedCustomer.name}
             </p>
             <p>
-              <strong>Monthly Income:</strong> ${selectedCustomer.monthlyIncome.toLocaleString()}
+              <strong>Monthly Income:</strong> $
+              {selectedCustomer.monthlyIncome.toLocaleString()}
             </p>
             <p>
-              <strong>Monthly Expenses:</strong> ${selectedCustomer.monthlyExpenses.toLocaleString()}
+              <strong>Monthly Expenses:</strong> $
+              {selectedCustomer.monthlyExpenses.toLocaleString()}
             </p>
             <p>
               <strong>Credit Score:</strong> {selectedCustomer.creditScore}
             </p>
             <p>
-              <strong>Outstanding Loans:</strong> ${selectedCustomer.outstandingLoans.toLocaleString()}
+              <strong>Outstanding Loans:</strong> $
+              {selectedCustomer.outstandingLoans.toLocaleString()}
             </p>
             <p>
-              <strong>Account Balance:</strong> ${selectedCustomer.accountBalance.toLocaleString()}
+              <strong>Account Balance:</strong> $
+              {selectedCustomer.accountBalance.toLocaleString()}
             </p>
             <p>
               <strong>Risk Score:</strong> {selectedCustomer.riskScore}
@@ -283,7 +310,7 @@ const Workflow: React.FC = () => {
         )}
       </Modal>
     </div>
-  )
-}
+  );
+};
 
-export default Workflow
+export default Workflow;

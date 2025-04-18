@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import type { Customer, RiskScoreDistribution, IncomeExpenseData } from "../types"
 import { getCustomers } from "../services/api"

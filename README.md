@@ -2,38 +2,42 @@
 
 A comprehensive dashboard for credit risk analytics, providing visual insights into customer financial health, risk scores, and workflow management for risk officers.
 
-## Features
+## Setup Instructions
 
-### 1. Dashboard Overview
-- Financial metrics display using Ant Design components
-- Line chart showing income vs expenses over time
-- Bar chart for risk score distribution
-- Sortable/filterable table for customer data
+### Prerequisites
+- Node.js (v14 or higher)
+- npm or yarn
 
-### 2. Risk Assessment & Scoring
-- Risk score calculation based on:
-  - Credit score (40%)
-  - Loan repayment history (30%)
-  - Outstanding loans vs income ratio (30%)
-- Visual representation of risk scores with color coding
+### Frontend Setup
+1. Clone the repository
+   \`\`\`
+   git clone https://github.com/arwebdeveloper/credit-risk-analytics-dashboard.git
+   cd credit-risk-analytics-dashboard
+   \`\`\`
 
-### 3. Workflow Automation & Orchestration
-- Status updates (Review, Approved, Rejected)
-- Alert system for high-risk customers
+2. Install dependencies
+   \`\`\`
+   npm install
+   \`\`\`
+
+3. Create a `.env` file in the root directory with the following content:
+   \`\`\`
+   VITE_API_URL = "http://localhost:8080/api"
+   \`\`\`
+
+4. Start the development server
+   \`\`\`
+   npm run dev
+   \`\`\`
 
 ## Tech Stack
 
-### Frontend
 - React with TypeScript
 - Vite for build tooling
 - React Router for navigation
 - Axios for API requests
 - Ant Design for UI components
 - Recharts for data visualization
-
-### Backend
-- Node.js with Express.js
-- In-memory JSON for data storage
 
 ## Risk Scoring Explanation
 
@@ -69,7 +73,6 @@ This project was developed with the assistance of the following AI tools:
 
 1. **Codium**: Used for code completion and suggestions, particularly for:
    - TypeScript type definitions
-   - React component structure
    - Ant Design component implementation
 
 2. **ChatGPT**: Used for:
@@ -77,49 +80,6 @@ This project was developed with the assistance of the following AI tools:
    - API endpoint structure
    - Code optimization suggestions
 
-## Setup Instructions
-
-### Prerequisites
-- Node.js (v14 or higher)
-- npm or yarn
-
-### Frontend Setup
-1. Clone the repository
-   \`\`\`
-   git clone https://github.com/yourusername/credit-risk-dashboard.git
-   cd credit-risk-dashboard
-   \`\`\`
-
-2. Install dependencies
-   \`\`\`
-   npm install
-   \`\`\`
-
-3. Create a `.env` file in the root directory with the following content:
-   \`\`\`
-   VITE_API_URL=http://localhost:3001/api
-   \`\`\`
-
-4. Start the development server
-   \`\`\`
-   npm run dev
-   \`\`\`
-
-### Backend Setup
-1. Navigate to the server directory
-   \`\`\`
-   cd server
-   \`\`\`
-
-2. Install dependencies
-   \`\`\`
-   npm install
-   \`\`\`
-
-3. Start the server
-   \`\`\`
-   npm start
-   \`\`\`
 
 ## Bonus Features Implemented
 - Dark mode toggle
@@ -127,5 +87,3 @@ This project was developed with the assistance of the following AI tools:
 - Advanced filters/search in tables
 - Alert system for high-risk customers
 
-## License
-This project is licensed under the MIT License - see the LICENSE file for details.

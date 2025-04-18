@@ -1,7 +1,4 @@
-"use client";
-
 import type React from "react";
-
 import { Layout, Menu } from "antd";
 import {
   DashboardOutlined,

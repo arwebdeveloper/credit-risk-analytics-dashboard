@@ -1,5 +1,3 @@
-"use client"
-
 import { ConfigProvider, Layout, theme } from "antd"
 import { Routes, Route } from "react-router-dom"
 import { useTheme } from "./context/ThemeContext"

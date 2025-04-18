@@ -1,10 +1,20 @@
-"use client"
-
-import type React from "react"
-
-import { useState } from "react"
-import { Row, Col, Card, Statistic, Table, Input, Spin, Alert, Typography } from "antd"
-import { ArrowUpOutlined, ArrowDownOutlined, SearchOutlined } from "@ant-design/icons"
+import type React from "react";
+import { useState } from "react";
+import {
+  Row,
+  Col,
+  Card,
+  Statistic,
+  Table,
+  Input,
+  Alert,
+  Typography,
+} from "antd";
+import {
+  ArrowUpOutlined,
+  ArrowDownOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import {
   LineChart,
   Line,
@@ -16,38 +26,55 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from "recharts"
-import type { Customer } from "../types"
-import { useCustomers } from "../hooks/useCustomers"
-import { getRiskLevel, getRiskColor } from "../utils/riskCalculator"
-import type { ColumnsType } from "antd/es/table"
+} from "recharts";
+import type { Customer } from "../types";
+import { useCustomers } from "../hooks/useCustomers";
+import { getRiskLevel, getRiskColor } from "../utils/riskCalculator";
+import type { ColumnsType } from "antd/es/table";
+import Loader from "@/components/Loader";
 
-
-const { Title } = Typography
-const { Search } = Input
+const { Title } = Typography;
+const { Search } = Input;
 
 const Dashboard: React.FC = () => {
-  const { customers, loading, error, getRiskScoreDistribution, getIncomeExpensesData } = useCustomers()
-  const [searchText, setSearchText] = useState("")
+  const {
+    customers,
+    loading,
+    error,
+    getRiskScoreDistribution,
+    getIncomeExpensesData,
+  } = useCustomers();
+  const [searchText, setSearchText] = useState("");
 
   // Filter customers based on search text
   const filteredCustomers = customers.filter(
     (customer) =>
       customer.name.toLowerCase().includes(searchText.toLowerCase()) ||
-      customer.customerId.toLowerCase().includes(searchText.toLowerCase()),
-  )
+      customer.customerId.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   // Calculate total income, expenses, and average risk score
-  const totalIncome = customers.reduce((sum, customer) => sum + customer.monthlyIncome, 0)
-  const totalExpenses = customers.reduce((sum, customer) => sum + customer.monthlyExpenses, 0)
+  const totalIncome = customers.reduce(
+    (sum, customer) => sum + customer.monthlyIncome,
+    0
+  );
+  const totalExpenses = customers.reduce(
+    (sum, customer) => sum + customer.monthlyExpenses,
+    0
+  );
   const avgRiskScore =
     customers.length > 0
-      ? Math.round(customers.reduce((sum, customer) => sum + (customer.riskScore || 0), 0) / customers.length)
-      : 0
+      ? Math.round(
+          customers.reduce(
+            (sum, customer) => sum + (customer.riskScore || 0),
+            0
+          ) / customers.length
+        )
+      : 0;
 
   // Prepare data for charts
-  const riskDistribution = getRiskScoreDistribution()
-  const incomeExpensesData = getIncomeExpensesData()
+  const riskDistribution = getRiskScoreDistribution();
+  const incomeExpensesData = getIncomeExpensesData();
 
   // Table columns
   const columns: ColumnsType<Customer> = [
@@ -82,12 +109,12 @@ const Dashboard: React.FC = () => {
       dataIndex: "riskScore",
       key: "riskScore",
       render: (value: number) => {
-        const riskLevel = getRiskLevel(value)
+        const riskLevel = getRiskLevel(value);
         return (
           <span style={{ color: getRiskColor(riskLevel) }}>
             {value} ({riskLevel})
           </span>
-        )
+        );
       },
       sorter: (a, b) => (a.riskScore || 0) - (b.riskScore || 0),
     },
@@ -96,19 +123,19 @@ const Dashboard: React.FC = () => {
       dataIndex: "status",
       key: "status",
       render: (status: string) => {
-        let color = ""
+        let color = "";
         switch (status) {
           case "Review":
-            color = "#1677ff"
-            break
+            color = "#1677ff";
+            break;
           case "Approved":
-            color = "#52c41a"
-            break
+            color = "#52c41a";
+            break;
           case "Rejected":
-            color = "#ff4d4f"
-            break
+            color = "#ff4d4f";
+            break;
         }
-        return <span style={{ color }}>{status}</span>
+        return <span style={{ color }}>{status}</span>;
       },
       filters: [
         { text: "Review", value: "Review" },
@@ -117,13 +144,13 @@ const Dashboard: React.FC = () => {
       ],
       onFilter: (value, record) => record.status === value,
     },
-  ]
+  ];
   if (loading) {
-    return <Spin size="large" />
+    return <Loader />;
   }
 
   if (error) {
-    return <Alert message="Error" description={error} type="error" showIcon />
+    return <Alert message="Error" description={error} type="error" showIcon />;
   }
 
   return (
@@ -173,8 +200,16 @@ const Dashboard: React.FC = () => {
               title="Profit Margin"
               value={((totalIncome - totalExpenses) / totalIncome) * 100}
               precision={2}
-              valueStyle={{ color: totalIncome > totalExpenses ? "#3f8600" : "#cf1322" }}
-              prefix={totalIncome > totalExpenses ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+              valueStyle={{
+                color: totalIncome > totalExpenses ? "#3f8600" : "#cf1322",
+              }}
+              prefix={
+                totalIncome > totalExpenses ? (
+                  <ArrowUpOutlined />
+                ) : (
+                  <ArrowDownOutlined />
+                )
+              }
               suffix="%"
             />
           </Card>
@@ -192,8 +227,19 @@ const Dashboard: React.FC = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="income" stroke="#52c41a" activeDot={{ r: 8 }} name="Income" />
-                <Line type="monotone" dataKey="expenses" stroke="#ff4d4f" name="Expenses" />
+                <Line
+                  type="monotone"
+                  dataKey="income"
+                  stroke="#52c41a"
+                  activeDot={{ r: 8 }}
+                  name="Income"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="expenses"
+                  stroke="#ff4d4f"
+                  name="Expenses"
+                />
               </LineChart>
             </ResponsiveContainer>
           </Card>
@@ -207,7 +253,11 @@ const Dashboard: React.FC = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="count" name="Number of Customers" fill="#1677ff" />
+                <Bar
+                  dataKey="count"
+                  name="Number of Customers"
+                  fill="#1677ff"
+                />
               </BarChart>
             </ResponsiveContainer>
           </Card>
@@ -240,7 +290,7 @@ const Dashboard: React.FC = () => {
         />
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;

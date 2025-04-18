@@ -1,35 +1,47 @@
-"use client"
+import type React from "react";
+import { useState } from "react";
+import {
+  Card,
+  Table,
+  Progress,
+  Tag,
+  Input,
+  Select,
+  Row,
+  Col,
+  Typography,
+  Alert,
+} from "antd";
+import { SearchOutlined } from "@ant-design/icons";
+import type { Customer } from "../types";
+import { useCustomers } from "../hooks/useCustomers";
+import { getRiskLevel, getRiskColor } from "../utils/riskCalculator";
+import { ColumnsType } from "antd/es/table";
+import Loader from "@/components/Loader";
 
-import type React from "react"
-
-import { useState } from "react"
-import { Card, Table, Progress, Tag, Input, Select, Row, Col, Typography, Spin, Alert } from "antd"
-import { SearchOutlined } from "@ant-design/icons"
-import type { Customer } from "../types"
-import { useCustomers } from "../hooks/useCustomers"
-import { getRiskLevel, getRiskColor } from "../utils/riskCalculator"
-import { ColumnsType } from "antd/es/table"
-
-const { Title, Paragraph } = Typography
-const { Search } = Input
-const { Option } = Select
+const { Title, Paragraph } = Typography;
+const { Search } = Input;
+const { Option } = Select;
 
 const RiskAssessment: React.FC = () => {
-  const { customers, loading, error } = useCustomers()
-  const [searchText, setSearchText] = useState("")
-  const [riskFilter, setRiskFilter] = useState<string | null>(null)
+  const { customers, loading, error } = useCustomers();
+  const [searchText, setSearchText] = useState("");
+  const [riskFilter, setRiskFilter] = useState<string | null>(null);
 
   // Filter customers based on search text and risk level
   const filteredCustomers = customers.filter((customer) => {
     const matchesSearch =
       customer.name.toLowerCase().includes(searchText.toLowerCase()) ||
-      customer.customerId.toLowerCase().includes(searchText.toLowerCase())
+      customer.customerId.toLowerCase().includes(searchText.toLowerCase());
 
-    if (!riskFilter) return matchesSearch
+    if (!riskFilter) return matchesSearch;
 
-    const customerRiskLevel = getRiskLevel(customer.riskScore || 0)
-    return matchesSearch && customerRiskLevel.toLowerCase() === riskFilter.toLowerCase()
-  })
+    const customerRiskLevel = getRiskLevel(customer.riskScore || 0);
+    return (
+      matchesSearch &&
+      customerRiskLevel.toLowerCase() === riskFilter.toLowerCase()
+    );
+  });
 
   // Table columns
   const columns: ColumnsType<Customer> = [
@@ -58,7 +70,11 @@ const RiskAssessment: React.FC = () => {
       render: (history: number[]) => (
         <div>
           {history.map((payment, index) => (
-            <Tag key={index} color={payment === 1 ? "success" : "error"} style={{ marginBottom: "4px" }}>
+            <Tag
+              key={index}
+              color={payment === 1 ? "success" : "error"}
+              style={{ marginBottom: "4px" }}
+            >
               {payment === 1 ? "Paid" : "Missed"}
             </Tag>
           ))}
@@ -69,19 +85,20 @@ const RiskAssessment: React.FC = () => {
       title: "Loans/Income Ratio",
       key: "loansIncomeRatio",
       render: (_, record) => {
-        const ratio = record.outstandingLoans / (record.monthlyIncome * 12)
-        return (ratio * 100).toFixed(2) + "%"
+        const ratio = record.outstandingLoans / (record.monthlyIncome * 12);
+        return (ratio * 100).toFixed(2) + "%";
       },
       sorter: (a, b) =>
-        a.outstandingLoans / (a.monthlyIncome * 12) - b.outstandingLoans / (b.monthlyIncome * 12),
+        a.outstandingLoans / (a.monthlyIncome * 12) -
+        b.outstandingLoans / (b.monthlyIncome * 12),
     },
     {
       title: "Risk Score",
       dataIndex: "riskScore",
       key: "riskScore",
       render: (value: number) => {
-        const riskLevel = getRiskLevel(value)
-        const color = getRiskColor(riskLevel)
+        const riskLevel = getRiskLevel(value);
+        const color = getRiskColor(riskLevel);
 
         return (
           <div>
@@ -93,18 +110,18 @@ const RiskAssessment: React.FC = () => {
             />
             <Tag color={color}>{riskLevel} Risk</Tag>
           </div>
-        )
+        );
       },
       sorter: (a, b) => (a.riskScore || 0) - (b.riskScore || 0),
     },
-  ]
+  ];
 
   if (loading) {
-    return <Spin size="large" />
+    return <Loader />;
   }
 
   if (error) {
-    return <Alert message="Error" description={error} type="error" showIcon />
+    return <Alert message="Error" description={error} type="error" showIcon />;
   }
 
   return (
@@ -113,17 +130,21 @@ const RiskAssessment: React.FC = () => {
 
       <Card className="dashboard-card">
         <Paragraph>
-          Our risk assessment algorithm calculates a risk score (0-100) for each customer based on three key factors:
+          Our risk assessment algorithm calculates a risk score (0-100) for each
+          customer based on three key factors:
         </Paragraph>
         <ul>
           <li>
-            <strong>Credit Score (40%):</strong> Higher credit scores reduce risk
+            <strong>Credit Score (40%):</strong> Higher credit scores reduce
+            risk
           </li>
           <li>
-            <strong>Loan Repayment History (30%):</strong> Consistent payments reduce risk
+            <strong>Loan Repayment History (30%):</strong> Consistent payments
+            reduce risk
           </li>
           <li>
-            <strong>Outstanding Loans to Income Ratio (30%):</strong> Lower ratios reduce risk
+            <strong>Outstanding Loans to Income Ratio (30%):</strong> Lower
+            ratios reduce risk
           </li>
         </ul>
         <Paragraph>
@@ -181,7 +202,7 @@ const RiskAssessment: React.FC = () => {
         />
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default RiskAssessment
+export default RiskAssessment;

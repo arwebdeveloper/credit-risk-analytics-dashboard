@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import { Layout, Button, Space, Typography, Tooltip } from "antd"
 import { BulbOutlined, BulbFilled } from "@ant-design/icons"
